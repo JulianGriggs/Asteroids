@@ -44,6 +44,7 @@ function draw()
 	asteroidMovement();
 	// shipFiring();
 	bulletMovement();
+	checkCollisions();
 
 }
 
@@ -161,7 +162,6 @@ function createScene()
 			asteroidMaterial);
 		
 		ast.position.copy(getRandomPointOnCircle(50));
-		console.log(ast.position)
 		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
 		scene.add(ast);
 		asteroids.push(ast);
@@ -203,6 +203,12 @@ function shipMovement()
 }
 
 // TODO: Need to figure out how to make this not hardcoded
+function resetBullet(bullet)
+{
+	bullet.position.set(0,0,0);
+	bullet.direction.set(0,0,0);
+}
+
 function resetBulletIfOutOfBounds(bullet) {
 
 	// if (bullet.position.x < -WIDTH / 2  || 
@@ -214,9 +220,14 @@ function resetBulletIfOutOfBounds(bullet) {
 			bullet.position.y < -30 || 
 			bullet.position.y > 30)
 	{
-		bullet.position.set(0,0,0);
-		bullet.direction.set(0,0,0);
+		resetBullet(bullet);
 	}
+}
+
+function resetAsteroid(ast)
+{
+	ast.position.copy(getRandomPointOnCircle(50));
+	ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
 }
 
 function resetAsteroidIfOutOfBounds(ast)
@@ -226,8 +237,7 @@ function resetAsteroidIfOutOfBounds(ast)
 			ast.position.y < -50 || 
 			ast.position.y > 50)
 	{
-		ast.position.copy(getRandomPointOnCircle(50));
-		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+		resetAsteroid(ast);
 	}
 }
 
@@ -239,6 +249,31 @@ function asteroidMovement()
 
 	for (var i = 0; i < asteroids.length; i++) {
 		asteroids[i].position = asteroids[i].position.add(asteroids[i].direction.clone().multiplyScalar(asteroidVelocity));
+	};
+}
+
+function checkCollisions()
+{
+	for (var i = 0; i < asteroids.length; i++) {
+		var sphere1 = new THREE.Sphere(asteroids[i].position, asteroids[i].geometry.boundingSphere.radius);
+		var sphere2;
+
+		for (var j = i + 1; j < asteroids.length; j++) {
+			sphere2 = new THREE.Sphere(asteroids[j].position, asteroids[j].geometry.boundingSphere.radius);
+			if (sphere1.intersectsSphere(sphere2))
+			{
+				resetAsteroid(asteroids[i]);
+				resetAsteroid(asteroids[j]);
+			}
+		}
+		for (var k = 0; k < bullets.length; k++) {
+			sphere2 = new THREE.Sphere(bullets[k].position, bullets[k].geometry.boundingSphere.radius);
+			if (sphere1.intersectsSphere(sphere2))
+			{
+				resetAsteroid(asteroids[i]);
+				resetBullet(bullets[k]);
+			}
+		}
 	};
 }
 

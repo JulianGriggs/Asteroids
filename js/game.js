@@ -3,16 +3,31 @@ var renderer, scene, camera, pointLight, spotLight;
 
 var ship;
 var bullets = [];
-var bullet1;
-var bullet2;
-var bullet3;
+var asteroids = [];
 
 var bulletVelocity = 0.4;
+var asteroidVelocity = 0.1;
 var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
 var BULLET_COLOR = 0xD43381;
 var originPosition = new THREE.Vector3(0,0,0);
+var NUM_ASTEROIDS = 25;
+var ASTEROID_COLOR = 0xFFFFFF;
+
+// Returns a random integer between min (included) and max (excluded)
+// Using Math.round() will give you a non-uniform distribution!
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getRandomPointOnCircle(radius) {
+	var angle = Math.random()*Math.PI*2;
+	x = Math.cos(angle)*radius;
+	y = Math.sin(angle)*radius;
+
+	return new THREE.Vector3(x, y, 0);
+}
 
 function setup()
 {
@@ -27,6 +42,7 @@ function draw()
   	renderer.render(scene, camera);
 	requestAnimationFrame(draw);
 	shipMovement();
+	asteroidMovement();
 	// shipFiring();
 	bulletMovement();
 
@@ -99,8 +115,7 @@ function createScene()
         ship.direction = ship.up.clone();
         scene.add( ship );
         }); 
-	 
-	
+	 	
 	// // Create a ship with cylinder geometry
 	// ship = new THREE.Mesh(
 	//     new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments),
@@ -112,19 +127,18 @@ function createScene()
 
 	// set up the sphere vars
 	// lower 'segment' and 'ring' values will increase performance
-	var radius = .5,
-	segments = 4,
-	rings = 4;
 
 	// create 15 bullets available to use
 	for (var i = 0; i < NUM_BULLETS; i++) {
-		var bulletMaterial =
-		new THREE.MeshLambertMaterial(
-		{
-			color: 0xD43381,
-			transparent: true,
-			opacity: 0.0
-		});
+		var radius = .5;
+		var segments = 4;
+		var rings = 4;
+		var bulletMaterial = new THREE.MeshLambertMaterial(
+			{
+				color: BULLET_COLOR,
+				transparent: true,
+				opacity: 0.0
+			});
 		var bullet = new THREE.Mesh(
 		new THREE.SphereGeometry(radius,
 			segments,
@@ -133,6 +147,32 @@ function createScene()
 		bullet.direction = new THREE.Vector3(0,0,0);
 		scene.add(bullet);
 		bullets.push(bullet);
+	};
+
+	// create the sphere's material
+
+
+	// create 25 asteroids available to use
+	for (var i = 0; i < NUM_ASTEROIDS; i++) {
+		var radius = 2;
+		var segments = 4;
+		var rings = 4;
+		var asteroidMaterial =
+		new THREE.MeshLambertMaterial(
+		{
+			color: ASTEROID_COLOR
+
+		});
+		var ast = new THREE.Mesh(
+		new THREE.SphereGeometry(radius,
+			segments,
+			rings),
+			asteroidMaterial);
+		
+		ast.position.copy(getRandomPointOnCircle(50));
+		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+		scene.add(ast);
+		asteroids.push(ast);
 	};
 
 	// // create a point light
@@ -196,6 +236,29 @@ function resetBulletIfOutOfBounds(bullet) {
 		bullet.direction.set(0,0,0);
 		makeTransparent(bullet);
 	}
+}
+
+function resetAsteroidIfOutOfBounds(ast)
+{
+	if (ast.position.x < -50  || 
+			ast.position.x >  50  || 
+			ast.position.y < -50 || 
+			ast.position.y > 50)
+	{
+		ast.position.copy(getRandomPointOnCircle(50));
+		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+	}
+}
+
+function asteroidMovement()
+{
+	for (var i = 0; i < asteroids.length; i++) {
+		resetAsteroidIfOutOfBounds(asteroids[i]);
+	};
+
+	for (var i = 0; i < asteroids.length; i++) {
+		asteroids[i].position = asteroids[i].position.add(asteroids[i].direction.clone().multiplyScalar(asteroidVelocity));
+	};
 }
 
 function bulletMovement()

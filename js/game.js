@@ -12,6 +12,7 @@ var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
 var BULLET_COLOR = 0xD43381;
+var originPosition = new THREE.Vector3(0,0,0);
 
 function setup()
 {
@@ -85,7 +86,6 @@ function createScene()
 	new THREE.MeshLambertMaterial(
 	{
 		color: 0xD43001
-	// color: 0x000000
 	});
 
 	var loader = new THREE.ObjectLoader();
@@ -115,22 +115,21 @@ function createScene()
 	var radius = .5,
 	segments = 4,
 	rings = 4;
-	 
-	// create the sphere's material
-	var bulletMaterial =
-	new THREE.MeshLambertMaterial(
-	{
-		color: 0xD43381
 
-	});
 	// create 15 bullets available to use
 	for (var i = 0; i < NUM_BULLETS; i++) {
+		var bulletMaterial =
+		new THREE.MeshLambertMaterial(
+		{
+			color: 0xD43381,
+			transparent: true,
+			opacity: 0.0
+		});
 		var bullet = new THREE.Mesh(
 		new THREE.SphereGeometry(radius,
 			segments,
 			rings),
 			bulletMaterial);
-		// bullet.material.opacity = 0;
 		bullet.direction = new THREE.Vector3(0,0,0);
 		scene.add(bullet);
 		bullets.push(bullet);
@@ -148,6 +147,16 @@ function createScene()
 	 
 	// add to the scene
 	scene.add(pointLight);
+}
+
+function makeOpaque(bullet) {
+	bullet.material.transparent = false;
+	bullet.material.opacity = 1.0;
+}
+
+function makeTransparent(bullet) {
+	bullet.material.transparent = true;
+	bullet.material.opacity = 0.0;
 }
 
 // Handles player's ship rotation
@@ -185,6 +194,7 @@ function resetBulletIfOutOfBounds(bullet) {
 	{
 		bullet.position.set(0,0,0);
 		bullet.direction.set(0,0,0);
+		makeTransparent(bullet);
 	}
 }
 
@@ -203,37 +213,12 @@ function bulletMovement()
 
 function shipFiring()
 {
-	var shotBulletMaterial =
-	new THREE.MeshLambertMaterial(
-	{
-		color: 0xD43381
-		// color: 0x000000
-	});
-	var originPosition = new THREE.Vector3(0,0,0);
 	for (var i = 0; i < bullets.length; i++) {
 		if (bullets[i].position.equals(originPosition)) {
 			bullets[i].direction = ship.direction.clone();
-			// bullets[i].material.opacity = 1;
+			makeOpaque(bullets[i]);
 			break;
-		}
-	};
-	// if (bullet1.position.equals(originPosition))
-	// {
-	// 	bullet1.direction = ship.direction.clone();
-	// }
-	
-	// else if (bullet2.position.equals(originPosition))
-	// {
-	// 	bullet2.direction = ship.direction.clone();
-	// }
-	
-	// else if (bullet3.position.equals(originPosition))
-	// {
-	// 	bullet3.direction = ship.direction.clone();
-	// }
+		} 
 
-	// else
-	// {
-	// 	// Do nothing because all bullets are fired
-	// }
+	};
 }

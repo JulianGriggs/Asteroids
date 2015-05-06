@@ -16,7 +16,7 @@ var Key = {
   
   onKeydown: function(event) {
     this._pressed[event.keyCode] = true;
-    if (event.keyCode == 32) 
+    if (event.keyCode == Key.SPACE) 
       shipFiring();
   },
   

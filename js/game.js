@@ -2,6 +2,7 @@
 var renderer, scene, camera, pointLight, spotLight;
 
 var ship;
+var bullets = [];
 var bullet1;
 var bullet2;
 var bullet3;
@@ -9,6 +10,8 @@ var bullet3;
 var bulletVelocity = 0.4;
 var WIDTH;
 var HEIGHT;
+var NUM_BULLETS = 15;
+var BULLET_COLOR = 0xD43381;
 
 function setup()
 {
@@ -81,7 +84,8 @@ function createScene()
 	var shipMaterial =
 	new THREE.MeshLambertMaterial(
 	{
-	color: 0xD43001
+		color: 0xD43001
+	// color: 0x000000
 	});
 
 	var loader = new THREE.ObjectLoader();
@@ -117,34 +121,20 @@ function createScene()
 	new THREE.MeshLambertMaterial(
 	{
 		color: 0xD43381
+
 	});
-	 
-	// Create a ball with sphere geometry
-	bullet1 = new THREE.Mesh(
+	// create 15 bullets available to use
+	for (var i = 0; i < NUM_BULLETS; i++) {
+		var bullet = new THREE.Mesh(
 		new THREE.SphereGeometry(radius,
-		segments,
-		rings),
-		bulletMaterial);
-	bullet1.direction = new THREE.Vector3(0,0,0);
-	scene.add(bullet1);
-
-	// Create a ball with sphere geometry
-	bullet2 = new THREE.Mesh(
-	    new THREE.SphereGeometry(radius,
-	    segments,
-	    rings),
-	    bulletMaterial);
-	bullet2.direction = new THREE.Vector3(0,0,0);
-	scene.add(bullet2);
-
-	// Create a ball with sphere geometry
-	bullet3 = new THREE.Mesh(
-	    new THREE.SphereGeometry(radius,
-	    segments,
-	    rings),
-	    bulletMaterial);
-	bullet3.direction = new THREE.Vector3(0,0,0);
-	scene.add(bullet3);
+			segments,
+			rings),
+			bulletMaterial);
+		// bullet.material.opacity = 0;
+		bullet.direction = new THREE.Vector3(0,0,0);
+		scene.add(bullet);
+		bullets.push(bullet);
+	};
 
 	// // create a point light
 	pointLight = new THREE.PointLight(0xF8D898);
@@ -200,37 +190,50 @@ function resetBulletIfOutOfBounds(bullet) {
 
 function bulletMovement()
 {
-	resetBulletIfOutOfBounds(bullet1);
-	resetBulletIfOutOfBounds(bullet2);
-	resetBulletIfOutOfBounds(bullet3);
 
-	bullet1.position = bullet1.position.add(bullet1.direction.clone().multiplyScalar(bulletVelocity));
-	bullet2.position = bullet2.position.add(bullet2.direction.clone().multiplyScalar(bulletVelocity));
-	bullet3.position = bullet3.position.add(bullet3.direction.clone().multiplyScalar(bulletVelocity));
-	if (!bullet1.position.equals(new THREE.Vector3(0,0,0))) console.log(bullet1.position);
+	for (var i = 0; i < bullets.length; i++) {
+		resetBulletIfOutOfBounds(bullets[i]);
+	};
+
+	for (var i = 0; i < bullets.length; i++) {
+		bullets[i].position = bullets[i].position.add(bullets[i].direction.clone().multiplyScalar(bulletVelocity));
+	};
 
 }
 
 function shipFiring()
 {
+	var shotBulletMaterial =
+	new THREE.MeshLambertMaterial(
+	{
+		color: 0xD43381
+		// color: 0x000000
+	});
 	var originPosition = new THREE.Vector3(0,0,0);
-	if (bullet1.position.equals(originPosition))
-	{
-		bullet1.direction = ship.direction.clone();
-	}
+	for (var i = 0; i < bullets.length; i++) {
+		if (bullets[i].position.equals(originPosition)) {
+			bullets[i].direction = ship.direction.clone();
+			// bullets[i].material.opacity = 1;
+			break;
+		}
+	};
+	// if (bullet1.position.equals(originPosition))
+	// {
+	// 	bullet1.direction = ship.direction.clone();
+	// }
 	
-	else if (bullet2.position.equals(originPosition))
-	{
-		bullet2.direction = ship.direction.clone();
-	}
+	// else if (bullet2.position.equals(originPosition))
+	// {
+	// 	bullet2.direction = ship.direction.clone();
+	// }
 	
-	else if (bullet3.position.equals(originPosition))
-	{
-		bullet3.direction = ship.direction.clone();
-	}
+	// else if (bullet3.position.equals(originPosition))
+	// {
+	// 	bullet3.direction = ship.direction.clone();
+	// }
 
-	else
-	{
-		// Do nothing because all bullets are fired
-	}
+	// else
+	// {
+	// 	// Do nothing because all bullets are fired
+	// }
 }

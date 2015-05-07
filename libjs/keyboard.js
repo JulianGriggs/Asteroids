@@ -19,11 +19,13 @@ var Key = {
   },
   
   onKeydown: function(event) {
-    this._pressed[event.keyCode] = true;
-    if (event.keyCode == Key.SPACE && inPlay) {
-      if (spaceAllowed) {
-        shipFiring();
-        spaceAllowed = false;
+    if (inPlay) {
+      this._pressed[event.keyCode] = true;
+      if (event.keyCode == Key.SPACE) {
+        if (spaceAllowed) {
+          shipFiring();
+          spaceAllowed = false;
+        }
       }
     }
   },

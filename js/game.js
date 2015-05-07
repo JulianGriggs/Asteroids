@@ -11,6 +11,7 @@ var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
 var BULLET_COLOR = 0xD43381;
+var originPosition = new THREE.Vector3(0,0,0);
 var NUM_ASTEROIDS = 25;
 var ASTEROID_COLOR = 0xFFFFFF;
 
@@ -102,7 +103,6 @@ function createScene()
 	new THREE.MeshLambertMaterial(
 	{
 		color: 0xD43001
-	// color: 0x000000
 	});
 
 	var loader = new THREE.ObjectLoader();
@@ -116,45 +116,54 @@ function createScene()
         ship.direction = ship.up.clone();
         scene.add( ship );
         }); 
-	 
- 
-	// create the sphere's material
-	var bulletMaterial =
-	new THREE.MeshLambertMaterial(
-	{
-		color: BULLET_COLOR
+	 	
+	// // Create a ship with cylinder geometry
+	// ship = new THREE.Mesh(
+	//     new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments),
+	//     shipMaterial);
+	// ship.direction = ship.up.clone();
+	// // add the sphere to the scene
+	// scene.add(ship);
 
-	});
+
+	// set up the sphere vars
+	// lower 'segment' and 'ring' values will increase performance
 
 	// create 15 bullets available to use
 	for (var i = 0; i < NUM_BULLETS; i++) {
 		var radius = .5;
 		var segments = 4;
 		var rings = 4;
+		var bulletMaterial = new THREE.MeshLambertMaterial(
+			{
+				color: BULLET_COLOR,
+				transparent: true,
+				opacity: 0.0
+			});
 		var bullet = new THREE.Mesh(
 		new THREE.SphereGeometry(radius,
 			segments,
 			rings),
 			bulletMaterial);
-		// bullet.material.opacity = 0;
 		bullet.direction = new THREE.Vector3(0,0,0);
 		scene.add(bullet);
 		bullets.push(bullet);
 	};
 
 	// create the sphere's material
-	var asteroidMaterial =
-	new THREE.MeshLambertMaterial(
-	{
-		color: ASTEROID_COLOR
 
-	});
 
 	// create 25 asteroids available to use
 	for (var i = 0; i < NUM_ASTEROIDS; i++) {
 		var radius = 2;
 		var segments = 4;
 		var rings = 4;
+		var asteroidMaterial =
+		new THREE.MeshLambertMaterial(
+		{
+			color: ASTEROID_COLOR
+
+		});
 		var ast = new THREE.Mesh(
 		new THREE.SphereGeometry(radius,
 			segments,
@@ -179,6 +188,16 @@ function createScene()
 	 
 	// add to the scene
 	scene.add(pointLight);
+}
+
+function makeOpaque(bullet) {
+	bullet.material.transparent = false;
+	bullet.material.opacity = 1.0;
+}
+
+function makeTransparent(bullet) {
+	bullet.material.transparent = true;
+	bullet.material.opacity = 0.0;
 }
 
 // Handles player's ship rotation
@@ -221,6 +240,9 @@ function resetBulletIfOutOfBounds(bullet) {
 			bullet.position.y > 30)
 	{
 		resetBullet(bullet);
+		bullet.position.set(0,0,0);
+		bullet.direction.set(0,0,0);
+		makeTransparent(bullet);
 	}
 }
 
@@ -292,18 +314,12 @@ function bulletMovement()
 
 function shipFiring()
 {
-	var shotBulletMaterial =
-	new THREE.MeshLambertMaterial(
-	{
-		color: 0xD43381
-		// color: 0x000000
-	});
-	var originPosition = new THREE.Vector3(0,0,0);
 	for (var i = 0; i < bullets.length; i++) {
 		if (bullets[i].position.equals(originPosition)) {
 			bullets[i].direction = ship.direction.clone();
-			// bullets[i].material.opacity = 1;
+			makeOpaque(bullets[i]);
 			break;
-		}
+		} 
+
 	};
 }

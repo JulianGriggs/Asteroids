@@ -2,6 +2,7 @@
 var renderer, scene, camera, pointLight, spotLight;
 
 var ship;
+var shield;
 var bullets = [];
 var asteroids = [];
 
@@ -94,6 +95,14 @@ function createScene()
 		color: 0xD43001
 	});
 
+	var shieldMaterial = 
+	new THREE.MeshBasicMaterial(
+	{
+		color: 0xFFFF00,
+		transparent: true,
+		opacity: 0.2
+	});
+
 	var loader = new THREE.ObjectLoader();
         loader.load( '/models/star-wars-vader-tie-fighter.json', function ( model ) {
         ship = model;
@@ -105,7 +114,18 @@ function createScene()
 
         var bbox = new THREE.BoundingBoxHelper( ship, 0xFFFFFF );
 		bbox.update();
-		ship.boundingSphere = bbox.box.getBoundingSphere();	
+
+		var boundingSphere = bbox.box.getBoundingSphere();
+
+		shield = new THREE.Mesh(
+		new THREE.SphereGeometry(boundingSphere.radius,
+			8,
+			8),
+			shieldMaterial);
+		console.log(ship)
+		shield.position = ship.center;
+
+		scene.add(shield);
         scene.add( ship );
         }); 
 	 	
@@ -274,16 +294,16 @@ function checkCollisions()
 			}
 		}
 		// Check collisions between asteroid and bullet
-		for (var k = 0; k < bullets.length; k++) {
-			sphere2 = new THREE.Sphere(bullets[k].position, bullets[k].geometry.boundingSphere.radius);
+		for (var j = 0; j < bullets.length; j++) {
+			sphere2 = new THREE.Sphere(bullets[j].position, bullets[j].geometry.boundingSphere.radius);
 			if (sphere1.intersectsSphere(sphere2))
 			{
 				resetAsteroid(asteroids[i]);
-				resetBullet(bullets[k]);
+				resetBullet(bullets[j]);
 			}
 		}
 		// Check collisions between asteroid and ship
-		sphere2 = ship.boundingSphere;
+		sphere2 = shield.geometry.boundingSphere;
 		if (sphere1.intersectsSphere(sphere2))
 		{
 			resetAsteroid(asteroids[i]);

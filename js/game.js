@@ -98,11 +98,14 @@ function createScene()
         loader.load( '/models/star-wars-vader-tie-fighter.json', function ( model ) {
         ship = model;
         ship.scale.set(2,2,2);
-
-        ship.position.x =15;
-        ship.position.y =0;
-        ship.position.z =0;
+        ship.position.x = 0;
+        ship.position.y = 0;
+        ship.position.z = 0;
         ship.direction = ship.up.clone();
+
+        var bbox = new THREE.BoundingBoxHelper( ship, 0xFFFFFF );
+		bbox.update();
+		ship.boundingSphere = bbox.box.getBoundingSphere();	
         scene.add( ship );
         }); 
 	 	
@@ -147,7 +150,9 @@ function createScene()
 		
 		ast.position.copy(getRandomPointOnCircle(50));
 		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+		ast.geometry.computeBoundingBox();
 		scene.add(ast);
+
 		asteroids.push(ast);
 	};
 
@@ -204,7 +209,8 @@ function resetBullet(bullet)
 	makeTransparent(bullet);
 }
 
-function resetBulletIfOutOfBounds(bullet) {
+function resetBulletIfOutOfBounds(bullet) 
+{
 
 	// if (bullet.position.x < -WIDTH / 2  || 
 	// 		bullet.position.x >  WIDTH / 2  || 
@@ -241,6 +247,7 @@ function resetAsteroidIfOutOfBounds(ast)
 
 function asteroidMovement()
 {
+
 	for (var i = 0; i < asteroids.length; i++) {
 		resetAsteroidIfOutOfBounds(asteroids[i]);
 	};
@@ -250,12 +257,14 @@ function asteroidMovement()
 	};
 }
 
+
 function checkCollisions()
 {
 	for (var i = 0; i < asteroids.length; i++) {
 		var sphere1 = new THREE.Sphere(asteroids[i].position, asteroids[i].geometry.boundingSphere.radius);
 		var sphere2;
- 
+
+ 		// Check collisions between asteroids
 		for (var j = i + 1; j < asteroids.length; j++) {
 			sphere2 = new THREE.Sphere(asteroids[j].position, asteroids[j].geometry.boundingSphere.radius);
 			if (sphere1.intersectsSphere(sphere2))
@@ -264,6 +273,7 @@ function checkCollisions()
 				resetAsteroid(asteroids[j]);
 			}
 		}
+		// Check collisions between asteroid and bullet
 		for (var k = 0; k < bullets.length; k++) {
 			sphere2 = new THREE.Sphere(bullets[k].position, bullets[k].geometry.boundingSphere.radius);
 			if (sphere1.intersectsSphere(sphere2))
@@ -272,12 +282,17 @@ function checkCollisions()
 				resetBullet(bullets[k]);
 			}
 		}
+		// Check collisions between asteroid and ship
+		sphere2 = ship.boundingSphere;
+		if (sphere1.intersectsSphere(sphere2))
+		{
+			resetAsteroid(asteroids[i]);
+		}
 	};
 }
 
 function bulletMovement()
 {
-
 	for (var i = 0; i < bullets.length; i++) {
 		resetBulletIfOutOfBounds(bullets[i]);
 	};
@@ -285,7 +300,6 @@ function bulletMovement()
 	for (var i = 0; i < bullets.length; i++) {
 		bullets[i].position = bullets[i].position.add(bullets[i].direction.clone().multiplyScalar(bulletVelocity));
 	};
-
 }
 
 function shipFiring()
@@ -296,6 +310,5 @@ function shipFiring()
 			makeOpaque(bullets[i]);
 			break;
 		} 
-
 	};
 }

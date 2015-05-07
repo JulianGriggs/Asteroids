@@ -257,7 +257,7 @@ function checkCollisions()
 	for (var i = 0; i < asteroids.length; i++) {
 		var sphere1 = new THREE.Sphere(asteroids[i].position, asteroids[i].geometry.boundingSphere.radius);
 		var sphere2;
-
+ 
 		for (var j = i + 1; j < asteroids.length; j++) {
 			sphere2 = new THREE.Sphere(asteroids[j].position, asteroids[j].geometry.boundingSphere.radius);
 			if (sphere1.intersectsSphere(sphere2))

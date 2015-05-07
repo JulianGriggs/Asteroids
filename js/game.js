@@ -45,6 +45,7 @@ function draw()
 	asteroidMovement();
 	// shipFiring();
 	bulletMovement();
+	checkCollisions();
 
 }
 
@@ -86,17 +87,6 @@ function createScene()
 	// not doing this somehow messes up shadow rendering
 	camera.position.z = 30;
 
-
-	// // set up the tetrahedron vars
-	// var radius = 5;
-	// var detail = 0;
-	// set up the cylinder vars
-	var radiusTop = 2;
-	var radiusBottom = 2;
-	var height = 4;
-	var radiusSegments = 8;
-
-
 	// create the sphere's material
 	var shipMaterial =
 	new THREE.MeshLambertMaterial(
@@ -109,25 +99,13 @@ function createScene()
         ship = model;
         ship.scale.set(2,2,2);
 
-        ship.position.x =0;
+        ship.position.x =15;
         ship.position.y =0;
         ship.position.z =0;
         ship.direction = ship.up.clone();
         scene.add( ship );
         }); 
 	 	
-	// // Create a ship with cylinder geometry
-	// ship = new THREE.Mesh(
-	//     new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments),
-	//     shipMaterial);
-	// ship.direction = ship.up.clone();
-	// // add the sphere to the scene
-	// scene.add(ship);
-
-
-	// set up the sphere vars
-	// lower 'segment' and 'ring' values will increase performance
-
 	// create 15 bullets available to use
 	for (var i = 0; i < NUM_BULLETS; i++) {
 		var radius = .5;
@@ -145,12 +123,10 @@ function createScene()
 			rings),
 			bulletMaterial);
 		bullet.direction = new THREE.Vector3(0,0,0);
+		makeTransparent(bullet);
 		scene.add(bullet);
 		bullets.push(bullet);
 	};
-
-	// create the sphere's material
-
 
 	// create 25 asteroids available to use
 	for (var i = 0; i < NUM_ASTEROIDS; i++) {
@@ -221,6 +197,13 @@ function shipMovement()
 }
 
 // TODO: Need to figure out how to make this not hardcoded
+function resetBullet(bullet)
+{
+	bullet.position.set(0,0,0);
+	bullet.direction.set(0,0,0);
+	makeTransparent(bullet);
+}
+
 function resetBulletIfOutOfBounds(bullet) {
 
 	// if (bullet.position.x < -WIDTH / 2  || 
@@ -232,10 +215,17 @@ function resetBulletIfOutOfBounds(bullet) {
 			bullet.position.y < -30 || 
 			bullet.position.y > 30)
 	{
+		resetBullet(bullet);
 		bullet.position.set(0,0,0);
 		bullet.direction.set(0,0,0);
 		makeTransparent(bullet);
-	}
+  	}
+}
+
+function resetAsteroid(ast)
+{
+	ast.position.copy(getRandomPointOnCircle(50));
+	ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
 }
 
 function resetAsteroidIfOutOfBounds(ast)
@@ -245,8 +235,7 @@ function resetAsteroidIfOutOfBounds(ast)
 			ast.position.y < -50 || 
 			ast.position.y > 50)
 	{
-		ast.position.copy(getRandomPointOnCircle(50));
-		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+		resetAsteroid(ast);
 	}
 }
 
@@ -258,6 +247,31 @@ function asteroidMovement()
 
 	for (var i = 0; i < asteroids.length; i++) {
 		asteroids[i].position = asteroids[i].position.add(asteroids[i].direction.clone().multiplyScalar(asteroidVelocity));
+	};
+}
+
+function checkCollisions()
+{
+	for (var i = 0; i < asteroids.length; i++) {
+		var sphere1 = new THREE.Sphere(asteroids[i].position, asteroids[i].geometry.boundingSphere.radius);
+		var sphere2;
+ 
+		for (var j = i + 1; j < asteroids.length; j++) {
+			sphere2 = new THREE.Sphere(asteroids[j].position, asteroids[j].geometry.boundingSphere.radius);
+			if (sphere1.intersectsSphere(sphere2))
+			{
+				resetAsteroid(asteroids[i]);
+				resetAsteroid(asteroids[j]);
+			}
+		}
+		for (var k = 0; k < bullets.length; k++) {
+			sphere2 = new THREE.Sphere(bullets[k].position, bullets[k].geometry.boundingSphere.radius);
+			if (sphere1.intersectsSphere(sphere2))
+			{
+				resetAsteroid(asteroids[i]);
+				resetBullet(bullets[k]);
+			}
+		}
 	};
 }
 

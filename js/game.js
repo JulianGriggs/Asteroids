@@ -76,6 +76,13 @@ function endGame() {
 	};
 }
 
+function loading(data){
+	var loadingDiv = document.getElementById("loading");
+	loadingDiv.textContent = "Loading: " + Math.floor(data.loaded/data.total * 100) + "%"; 
+	console.log(data.loaded)
+	if (data.loaded / data.total == 1) loadingDiv.style.display = 'none';
+}
+
 function createAsteroids() {
 	// create 25 asteroids available to use
 	for (var i = 0; i < NUM_ASTEROIDS; i++) {
@@ -120,7 +127,7 @@ function setup() {
 		ship = model;
 		createScene();
 		draw()
-	});
+	}, loading);
 }
 
 function draw()
@@ -349,8 +356,8 @@ function checkCollisions()
 			if (sphere1.intersectsSphere(sphere2))
 			{
 				// collision formula and code taken in part from the following website
-        // https://nicoschertler.wordpress.com/2013/10/07/elastic-collision-of-circles-and-spheres/				
-        var iRadius = asteroids[i].geometry.boundingSphere.radius;
+        		// https://nicoschertler.wordpress.com/2013/10/07/elastic-collision-of-circles-and-spheres/				
+        		var iRadius = asteroids[i].geometry.boundingSphere.radius;
 				var jRadius = asteroids[j].geometry.boundingSphere.radius;
 				var iCenter = asteroids[i].position;
 				var jCenter = asteroids[j].position;

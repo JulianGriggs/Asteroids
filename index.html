@@ -15,14 +15,13 @@
 			}
 		</style>
 	</head>
-	<body onload='setup();'>
+	<body onload='setup(); updateScore();'>
 		<div id='gameCanvas'></div>
-		<script src='./libjs/three.min.js'></script>
-		<script src='./libjs/keyboard.js'></script>
-		<script src='./js/game.js'></script>
+		<div id='loading' align="center"></div>
 		<p id="hello" align="center">Press enter to begin the game</p>
-		<p><div id='currentScore' align="center">	
-		<script>updateScore();</script>
-		</div>	</p>
-		</body>
+		<div id='currentScore' align="center"></div>
+	</body>
+	<script src='./libjs/three.min.js'></script>
+	<script src='./libjs/keyboard.js'></script>
+	<script src='./js/game.js'></script>
 </html>

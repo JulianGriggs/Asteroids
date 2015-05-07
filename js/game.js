@@ -399,7 +399,6 @@ function checkCollisions()
 		if (sphere1.intersectsSphere(sphere2))
 		{
 			// game over
-			resetAsteroid(asteroids[i]);
 			endGame();
 		}
 	};

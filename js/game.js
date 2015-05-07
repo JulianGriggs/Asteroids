@@ -87,17 +87,6 @@ function createScene()
 	// not doing this somehow messes up shadow rendering
 	camera.position.z = 30;
 
-
-	// // set up the tetrahedron vars
-	// var radius = 5;
-	// var detail = 0;
-	// set up the cylinder vars
-	var radiusTop = 2;
-	var radiusBottom = 2;
-	var height = 4;
-	var radiusSegments = 8;
-
-
 	// create the sphere's material
 	var shipMaterial =
 	new THREE.MeshLambertMaterial(
@@ -110,25 +99,13 @@ function createScene()
         ship = model;
         ship.scale.set(2,2,2);
 
-        ship.position.x =0;
+        ship.position.x =15;
         ship.position.y =0;
         ship.position.z =0;
         ship.direction = ship.up.clone();
         scene.add( ship );
         }); 
 	 	
-	// // Create a ship with cylinder geometry
-	// ship = new THREE.Mesh(
-	//     new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments),
-	//     shipMaterial);
-	// ship.direction = ship.up.clone();
-	// // add the sphere to the scene
-	// scene.add(ship);
-
-
-	// set up the sphere vars
-	// lower 'segment' and 'ring' values will increase performance
-
 	// create 15 bullets available to use
 	for (var i = 0; i < NUM_BULLETS; i++) {
 		var radius = .5;
@@ -146,12 +123,10 @@ function createScene()
 			rings),
 			bulletMaterial);
 		bullet.direction = new THREE.Vector3(0,0,0);
+		makeTransparent(bullet);
 		scene.add(bullet);
 		bullets.push(bullet);
 	};
-
-	// create the sphere's material
-
 
 	// create 25 asteroids available to use
 	for (var i = 0; i < NUM_ASTEROIDS; i++) {
@@ -226,6 +201,7 @@ function resetBullet(bullet)
 {
 	bullet.position.set(0,0,0);
 	bullet.direction.set(0,0,0);
+	makeTransparent(bullet);
 }
 
 function resetBulletIfOutOfBounds(bullet) {
@@ -243,7 +219,7 @@ function resetBulletIfOutOfBounds(bullet) {
 		bullet.position.set(0,0,0);
 		bullet.direction.set(0,0,0);
 		makeTransparent(bullet);
-	}
+  	}
 }
 
 function resetAsteroid(ast)

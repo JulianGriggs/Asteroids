@@ -267,7 +267,6 @@ function resetAsteroidIfOutOfBounds(ast)
 
 function asteroidMovement()
 {
-
 	for (var i = 0; i < asteroids.length; i++) {
 		resetAsteroidIfOutOfBounds(asteroids[i]);
 	};

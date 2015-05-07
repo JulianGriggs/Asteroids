@@ -68,6 +68,9 @@ function endGame() {
 	inPlay = false;
 	var c = document.getElementById("hello");
 	c.textContent = "You lose. Hit enter to restart the game"
+	for (var i = 0; i < asteroids.length; i++) {
+		asteroids[i].direction = originPosition.clone();
+	};
 }
 
 function createAsteroids() {

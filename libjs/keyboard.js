@@ -1,6 +1,9 @@
 window.addEventListener('keyup', function(event) { Key.onKeyup(event); }, false);
 window.addEventListener('keydown', function(event) { Key.onKeydown(event); }, false);
 
+// to help prev
+var spaceAllowed = true;
+
 var Key = {
   _pressed: {},
 
@@ -16,11 +19,18 @@ var Key = {
   
   onKeydown: function(event) {
     this._pressed[event.keyCode] = true;
-    if (event.keyCode == Key.SPACE) 
-      shipFiring();
+    if (event.keyCode == Key.SPACE) {
+      if (spaceAllowed) {
+        shipFiring();
+        spaceAllowed = false;
+      }
+    }
   },
   
   onKeyup: function(event) {
+    if (event.keyCode == Key.SPACE) {
+      spaceAllowed = true;
+    }
     delete this._pressed[event.keyCode];
   }
 

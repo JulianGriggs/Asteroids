@@ -16,6 +16,8 @@ var originPosition = new THREE.Vector3(0,0,0);
 var NUM_ASTEROIDS = 25;
 var ASTEROID_COLOR = 0xFFFFFF;
 
+var score = 0;
+
 // create the sphere's material
 var shipMaterial =
 	new THREE.MeshLambertMaterial(
@@ -45,6 +47,11 @@ var asteroidMaterial =
 		color: ASTEROID_COLOR
 	});
 
+
+function updateScore() {
+	var c = document.getElementById("currentScore");
+	c.textContent = "SCORE: " + score.toString();
+}
 
 // Returns a random integer between min (included) and max (excluded)
 // Using Math.round() will give you a non-uniform distribution!
@@ -152,12 +159,8 @@ function createScene()
 					segments,
 					rings),
 					asteroidMaterial.clone());
-			
-			ast.position.copy(getRandomPointOnCircle(50));
-			ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
-			ast.mass = 1; // change later perhaps
+			resetAsteroid(ast)
 			scene.add(ast);
-
 			asteroids.push(ast);
 		};
 	}
@@ -266,8 +269,22 @@ function resetBulletIfOutOfBounds(bullet)
 
 function resetAsteroid(ast)
 {
-	ast.position.copy(getRandomPointOnCircle(50));
-	ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+	var hasCollision = true;
+	while (hasCollision) {
+		var hasCollision = false;
+		ast.position.copy(getRandomPointOnCircle(50));
+		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+		var sphere1 = new THREE.Sphere(ast.position, ast.geometry.boundingSphere.radius);
+		for (var i = 0; i < asteroids.length; i++) {
+			if (ast == asteroids[i]) continue; // pointer comparison
+			var sphere2 = new THREE.Sphere(asteroids[i].position, asteroids[i].geometry.boundingSphere.radius);
+			if (sphere1.intersectsSphere(sphere2)) {
+				hasCollision = true;
+				break;
+			}
+		};
+	} 
+	ast.mass = 1; //perhaps change later
 }
 
 function resetAsteroidIfOutOfBounds(ast)
@@ -349,12 +366,15 @@ function checkCollisions()
 			{
 				resetAsteroid(asteroids[i]);
 				resetBullet(bullets[j]);
+				score += 1;
+				updateScore();
 			}
 		}
 		// Check collisions between asteroid and ship
 		sphere2 = shield.geometry.boundingSphere;
 		if (sphere1.intersectsSphere(sphere2))
 		{
+			// game over
 			resetAsteroid(asteroids[i]);
 		}
 	};
@@ -365,7 +385,6 @@ function bulletMovement()
 	for (var i = 0; i < bullets.length; i++) {
 		resetBulletIfOutOfBounds(bullets[i]);
 	};
-
 	for (var i = 0; i < bullets.length; i++) {
 		bullets[i].position = bullets[i].position.add(bullets[i].direction.clone().multiplyScalar(bulletVelocity));
 	};

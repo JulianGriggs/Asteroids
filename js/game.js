@@ -99,7 +99,7 @@ function createScene()
         ship = model;
         ship.scale.set(2,2,2);
 
-        ship.position.x =15;
+        ship.position.x =0;
         ship.position.y =0;
         ship.position.z =0;
         ship.direction = ship.up.clone();
@@ -147,6 +147,7 @@ function createScene()
 		
 		ast.position.copy(getRandomPointOnCircle(50));
 		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+		ast.mass = 1; // change later perhaps
 		scene.add(ast);
 		asteroids.push(ast);
 	};
@@ -219,7 +220,7 @@ function resetBulletIfOutOfBounds(bullet) {
 		bullet.position.set(0,0,0);
 		bullet.direction.set(0,0,0);
 		makeTransparent(bullet);
-  	}
+  }
 }
 
 function resetAsteroid(ast)
@@ -260,8 +261,42 @@ function checkCollisions()
 			sphere2 = new THREE.Sphere(asteroids[j].position, asteroids[j].geometry.boundingSphere.radius);
 			if (sphere1.intersectsSphere(sphere2))
 			{
-				resetAsteroid(asteroids[i]);
-				resetAsteroid(asteroids[j]);
+				// collision formula and code taken in part from the following website
+        // https://nicoschertler.wordpress.com/2013/10/07/elastic-collision-of-circles-and-spheres/				
+        var iRadius = asteroids[i].geometry.boundingSphere.radius;
+				var jRadius = asteroids[j].geometry.boundingSphere.radius;
+				var iCenter = asteroids[i].position;
+				var jCenter = asteroids[j].position;
+				var iVel = asteroids[i].direction.clone();
+				var jVel = asteroids[j].direction.clone();
+
+				var iNormal = jCenter.clone().sub(iCenter);
+				var iInt = iNormal.clone().add(iCenter);
+				
+				var jNormal = iCenter.clone().sub(jCenter);
+				var jInt = jNormal.clone().add(jCenter);
+
+				var collisionNormal = jNormal.clone().normalize();
+				var iDot = collisionNormal.clone().dot(iVel);
+				var iCol = collisionNormal.clone().multiplyScalar(iDot);
+				var iRem = iVel.clone().sub(iCol);
+
+				var jDot = collisionNormal.clone().dot(jVel);
+				var jCol = collisionNormal.clone().multiplyScalar(jDot);
+				var jRem = jVel.clone().sub(jCol);
+
+				var iLength = iCol.length() * Math.sign(iDot);
+				var jLength = jCol.length() * Math.sign(jDot);
+				var commonVel = 2 * (asteroids[i].mass * iLength + asteroids[j].mass * jLength) / (asteroids[i].mass + asteroids[j].mass);
+				var iLengthAfter = commonVel - iLength;
+				var jLengthAfter = commonVel - jLength;
+				iCol.multiplyScalar(iLengthAfter/iLength);
+				jCol.multiplyScalar(jLengthAfter/jLength);
+
+				asteroids[i].direction.copy(iCol);
+				asteroids[i].direction.add(iRem); 
+				asteroids[j].direction.copy(jCol);
+				asteroids[j].direction.add(jRem); 
 			}
 		}
 		for (var k = 0; k < bullets.length; k++) {

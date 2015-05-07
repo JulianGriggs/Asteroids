@@ -18,6 +18,8 @@ var ASTEROID_COLOR = 0xFFFFFF;
 
 var score = 0;
 
+var inPlay = false;
+
 // create the sphere's material
 var shipMaterial =
 	new THREE.MeshLambertMaterial(
@@ -47,6 +49,44 @@ var asteroidMaterial =
 		color: ASTEROID_COLOR
 	});
 
+function startGame() {
+	inPlay = true;
+	score = 0;
+	updateScore();
+	var c = document.getElementById("hello");
+	c.textContent = "Game on!"
+	if (asteroids.length == 0) {
+		createAsteroids();
+	} else {
+		for (var i = 0; i < asteroids.length; i++) {
+			resetAsteroid(asteroids[i]);
+		};
+	}
+}
+
+function endGame() {
+	inPlay = false;
+	var c = document.getElementById("hello");
+	c.textContent = "You lose. Hit enter to restart the game"
+}
+
+function createAsteroids() {
+	// create 25 asteroids available to use
+	for (var i = 0; i < NUM_ASTEROIDS; i++) {
+		var radius = 2;
+		var segments = 4;
+		var rings = 4;
+
+		var ast = new THREE.Mesh(
+			new THREE.SphereGeometry(radius,
+				segments,
+				rings),
+			asteroidMaterial.clone());
+		resetAsteroid(ast)
+		scene.add(ast);
+		asteroids.push(ast);
+	};
+}
 
 function updateScore() {
 	var c = document.getElementById("currentScore");
@@ -147,24 +187,6 @@ function createScene()
 		};
 	}
 
-	function createAsteroids() {
-		// create 25 asteroids available to use
-		for (var i = 0; i < NUM_ASTEROIDS; i++) {
-			var radius = 2;
-			var segments = 4;
-			var rings = 4;
-
-			var ast = new THREE.Mesh(
-				new THREE.SphereGeometry(radius,
-					segments,
-					rings),
-					asteroidMaterial.clone());
-			resetAsteroid(ast)
-			scene.add(ast);
-			asteroids.push(ast);
-		};
-	}
-
 	function createLights() {
 		// create a point light
 		pointLight = new THREE.PointLight(0xF8D898);
@@ -203,7 +225,6 @@ function createScene()
 	createShip();
 	createShield();
 	createBullets();
-	createAsteroids();
 	createLights();
 	createCamera();
 
@@ -376,6 +397,7 @@ function checkCollisions()
 		{
 			// game over
 			resetAsteroid(asteroids[i]);
+			endGame();
 		}
 	};
 }

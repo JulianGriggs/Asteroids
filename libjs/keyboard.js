@@ -12,6 +12,7 @@ var Key = {
   RIGHT: 39,
   DOWN: 40,
   SPACE: 32,
+  ENTER: 13,
   
   isDown: function(keyCode) {
     return this._pressed[keyCode];
@@ -19,7 +20,7 @@ var Key = {
   
   onKeydown: function(event) {
     this._pressed[event.keyCode] = true;
-    if (event.keyCode == Key.SPACE) {
+    if (event.keyCode == Key.SPACE && inPlay) {
       if (spaceAllowed) {
         shipFiring();
         spaceAllowed = false;
@@ -30,6 +31,8 @@ var Key = {
   onKeyup: function(event) {
     if (event.keyCode == Key.SPACE) {
       spaceAllowed = true;
+    } else if (event.keyCode == Key.ENTER && !inPlay) {
+      startGame();
     }
     delete this._pressed[event.keyCode];
   }

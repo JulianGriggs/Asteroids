@@ -16,8 +16,10 @@ var originPosition = new THREE.Vector3(0,0,0);
 var NUM_ASTEROIDS = 25;
 var ASTEROID_COLOR = 0xFFFFFF;
 
+// the users score (number of asteroids hit)
 var score = 0;
 
+// a boolean to determine if the user is currenlty playing the game
 var inPlay = false;
 
 // create the sphere's material
@@ -50,6 +52,7 @@ var asteroidMaterial =
 	});
 
 function startGame() {
+	console.log(camera);
 	inPlay = true;
 	score = 0;
 	updateScore();

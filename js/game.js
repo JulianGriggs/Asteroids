@@ -16,6 +16,36 @@ var originPosition = new THREE.Vector3(0,0,0);
 var NUM_ASTEROIDS = 25;
 var ASTEROID_COLOR = 0xFFFFFF;
 
+// create the sphere's material
+var shipMaterial =
+	new THREE.MeshLambertMaterial(
+	{
+		color: 0xD43001
+	});
+
+var shieldMaterial = 
+	new THREE.MeshBasicMaterial(
+	{
+		color: 0xFFFF00,
+		transparent: true,
+		opacity: 0.2
+	});
+
+var bulletMaterial = 
+	new THREE.MeshLambertMaterial(
+	{
+		color: BULLET_COLOR,
+		transparent: true,
+		opacity: 0.0
+	});
+
+var asteroidMaterial =
+	new THREE.MeshLambertMaterial(
+	{
+		color: ASTEROID_COLOR
+	});
+
+
 // Returns a random integer between min (included) and max (excluded)
 // Using Math.round() will give you a non-uniform distribution!
 function getRandomInt(min, max) {
@@ -29,14 +59,17 @@ function getRandomPointOnCircle(radius) {
 
 	return new THREE.Vector3(x, y, 0);
 }
-
-function setup()
-{
-    createScene();
-    draw();
+ 
+ 
+function setup() {
+	var loader = new THREE.ObjectLoader();
+    loader.load( '/models/star-wars-vader-tie-fighter.json', function ( model ) {
+		ship = model;
+		createScene();
+		draw()
+	});
 }
- 
- 
+
 function draw()
 {
   	// draw THREE.js scene
@@ -49,6 +82,7 @@ function draw()
 	checkCollisions();
 
 }
+
 
 function createScene() 
 {
@@ -66,128 +100,110 @@ function createScene()
 	var c = document.getElementById("gameCanvas");
 	c.appendChild(renderer.domElement);
 
-
-	// Camera Settings
-	var VIEW_ANGLE = 50;
-	var ASPECT = WIDTH / HEIGHT;
-	var NEAR = 0.1;
-	var FAR = 10000;
-
-	camera = new THREE.PerspectiveCamera(
-		VIEW_ANGLE,
-		ASPECT,
-		NEAR,
-		FAR);
-
 	scene = new THREE.Scene();
 
-	// add the camera to the scene
-	scene.add(camera);
+	function createShip() {
+	    ship.scale.set(2,2,2);
+	    ship.position.x = 0;
+	    ship.position.y = 0;
+	    ship.position.z = 0;
+	    ship.direction = ship.up.clone();
+    	scene.add( ship );
+	}
 
-	// set a default position for the camera
-	// not doing this somehow messes up shadow rendering
-	camera.position.z = 30;
-
-	// create the sphere's material
-	var shipMaterial =
-	new THREE.MeshLambertMaterial(
-	{
-		color: 0xD43001
-	});
-
-	var shieldMaterial = 
-	new THREE.MeshBasicMaterial(
-	{
-		color: 0xFFFF00,
-		transparent: true,
-		opacity: 0.2
-	});
-
-	var loader = new THREE.ObjectLoader();
-        loader.load( '/models/star-wars-vader-tie-fighter.json', function ( model ) {
-        ship = model;
-        ship.scale.set(2,2,2);
-        ship.position.x = 0;
-        ship.position.y = 0;
-        ship.position.z = 0;
-        ship.direction = ship.up.clone();
-
-        var bbox = new THREE.BoundingBoxHelper( ship, 0xFFFFFF );
+	function createShield() {
+		var bbox = new THREE.BoundingBoxHelper( ship, 0xFFFFFF );
 		bbox.update();
-
-		var boundingSphere = bbox.box.getBoundingSphere();
-
 		shield = new THREE.Mesh(
-		new THREE.SphereGeometry(boundingSphere.radius,
+		new THREE.SphereGeometry(bbox.box.getBoundingSphere().radius,
 			8,
 			8),
 			shieldMaterial);
-		console.log(ship)
-		shield.position = ship.center;
-
 		scene.add(shield);
-        scene.add( ship );
-        }); 
-	 	
-	// create 15 bullets available to use
-	for (var i = 0; i < NUM_BULLETS; i++) {
-		var radius = .5;
-		var segments = 4;
-		var rings = 4;
-		var bulletMaterial = new THREE.MeshLambertMaterial(
-			{
-				color: BULLET_COLOR,
-				transparent: true,
-				opacity: 0.0
-			});
-		var bullet = new THREE.Mesh(
-		new THREE.SphereGeometry(radius,
-			segments,
-			rings),
-			bulletMaterial);
-		bullet.direction = new THREE.Vector3(0,0,0);
-		makeTransparent(bullet);
-		scene.add(bullet);
-		bullets.push(bullet);
-	};
+	}
 
-	// create 25 asteroids available to use
-	for (var i = 0; i < NUM_ASTEROIDS; i++) {
-		var radius = 2;
-		var segments = 4;
-		var rings = 4;
-		var asteroidMaterial =
-		new THREE.MeshLambertMaterial(
-		{
-			color: ASTEROID_COLOR
+	function createBullets() {
+		// create 15 bullets available to use
+		for (var i = 0; i < NUM_BULLETS; i++) {
+			var radius = .5;
+			var segments = 4;
+			var rings = 4;
+			var bullet = new THREE.Mesh(
+				new THREE.SphereGeometry(radius,
+					segments,
+					rings),
+					bulletMaterial.clone());
+			bullet.direction = new THREE.Vector3(0,0,0);
+			makeTransparent(bullet);
+			scene.add(bullet);
+			bullets.push(bullet);
+		};
+	}
 
-		});
-		var ast = new THREE.Mesh(
-		new THREE.SphereGeometry(radius,
-			segments,
-			rings),
-			asteroidMaterial);
-		
-		ast.position.copy(getRandomPointOnCircle(50));
-		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
-		ast.mass = 1; // change later perhaps
-		scene.add(ast);
+	function createAsteroids() {
+		// create 25 asteroids available to use
+		for (var i = 0; i < NUM_ASTEROIDS; i++) {
+			var radius = 2;
+			var segments = 4;
+			var rings = 4;
 
-		asteroids.push(ast);
-	};
+			var ast = new THREE.Mesh(
+				new THREE.SphereGeometry(radius,
+					segments,
+					rings),
+					asteroidMaterial.clone());
+			
+			ast.position.copy(getRandomPointOnCircle(50));
+			ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
+			ast.mass = 1; // change later perhaps
+			scene.add(ast);
 
-	// // create a point light
-	pointLight = new THREE.PointLight(0xF8D898);
-	 
-	// set its position
-	pointLight.position.x = -1000;
-	pointLight.position.y = 0;
-	pointLight.position.z = 1000;
-	pointLight.intensity = 2.9;
-	pointLight.distance = 10000;
-	 
-	// add to the scene
-	scene.add(pointLight);
+			asteroids.push(ast);
+		};
+	}
+
+	function createLights() {
+		// create a point light
+		pointLight = new THREE.PointLight(0xF8D898);
+		 
+		// set its position
+		pointLight.position.x = -1000;
+		pointLight.position.y = 0;
+		pointLight.position.z = 1000;
+		pointLight.intensity = 2.9;
+		pointLight.distance = 10000;
+		 
+		// add to the scene
+		scene.add(pointLight);
+	}
+
+	function createCamera() {
+		// Camera Settings
+		var VIEW_ANGLE = 50;
+		var ASPECT = WIDTH / HEIGHT;
+		var NEAR = 0.1;
+		var FAR = 10000;
+
+		camera = new THREE.PerspectiveCamera(
+			VIEW_ANGLE,
+			ASPECT,
+			NEAR,
+			FAR);
+
+		scene.add(camera);
+
+		// set a default position for the camera
+		// not doing this somehow messes up shadow rendering
+		camera.position.z = 30;
+	}
+
+	createShip();
+	createShield();
+	createBullets();
+	createAsteroids();
+	createLights();
+	createCamera();
+
 }
 
 function makeOpaque(bullet) {

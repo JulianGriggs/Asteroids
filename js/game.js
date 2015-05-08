@@ -1,5 +1,6 @@
 // Scene object variables
 var renderer, scene, camera, pointLight, spotLight;
+var bgScene, bgCamera;
 
 var ship;
 var shield;
@@ -35,6 +36,12 @@ var shieldMaterial =
 		color: 0xFFFF00,
 		transparent: true,
 		opacity: 0.7
+	});
+
+var spaceMaterial = 
+	new THREE.MeshBasicMaterial(
+	{
+		color: 0xFFFFFF,
 	});
 
 var bulletMaterial = 
@@ -140,9 +147,17 @@ function setup() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
 				shieldMaterial.map = material;
-				loadShip();
+				loadSpaceTexture();
 			}, function (data) { loading(data, "shield texture")});
 		}
+		function loadSpaceTexture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				spaceMaterial.map = material;
+				loadShip();
+			}, function (data) { loading(data, "space texture")});
+		}
+
 		loadAsteroidTexture();
 	}
 
@@ -167,6 +182,9 @@ function setup() {
 function draw()
 {
   	// draw THREE.js scene
+  	renderer.autoClear = false;
+	renderer.clear();
+  	renderer.render(bgScene, bgCamera);
   	renderer.render(scene, camera);
 	requestAnimationFrame(draw);
 	shipMovement();
@@ -192,6 +210,18 @@ function createScene()
 	// var c = document.body;
 	c.appendChild(renderer.domElement);
 
+	var bg = new THREE.Mesh(
+	  new THREE.PlaneGeometry(2, 2, 0), spaceMaterial
+	);
+
+	// The bg plane shouldn't care about the z-buffer.
+	bg.material.depthTest = false;
+	bg.material.depthWrite = false;
+
+	bgScene = new THREE.Scene();
+	bgCamera = new THREE.Camera();
+	bgScene.add(bgCamera);
+	bgScene.add(bg);
 	scene = new THREE.Scene();
 
 	function createShip() {

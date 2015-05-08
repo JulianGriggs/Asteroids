@@ -34,7 +34,7 @@ var shieldMaterial =
 	{
 		color: 0xFFFF00,
 		transparent: true,
-		opacity: 0.2
+		opacity: 0.7
 	});
 
 var bulletMaterial = 
@@ -76,12 +76,12 @@ function endGame() {
 	};
 }
 
-function loading(data){
+function loading(data, type){
 	var loadingDiv = document.getElementById("loading");
-	loadingDiv.textContent = "Loading: " + Math.floor(data.loaded/data.total * 100) + "%"; 
-	console.log(data.loaded)
+	loadingDiv.textContent = "Loading " + type + ": " + Math.floor(data.loaded/data.total * 100) + "%"; 
 	if (data.loaded / data.total == 1) loadingDiv.style.display = 'none';
 }
+
 
 function createAsteroids() {
 	// create 25 asteroids available to use
@@ -122,12 +122,46 @@ function getRandomPointOnCircle(radius) {
  
  
 function setup() {
-	var loader = new THREE.ObjectLoader();
-    loader.load( '/models/star-wars-vader-tie-fighter.json', function ( model ) {
-		ship = model;
+	
+	function startSetup() {
+		loadMaterials();
+	}
+
+	// This function loads the textures and then, once finished, calls the loadShip function
+	function loadMaterials() {
+		function loadAsteroidTexture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/stone_texture.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				asteroidMaterial.map = material;
+				loadShieldTexture();
+			}, function (data) { loading(data, "asteroid texture")});
+		}
+		function loadShieldTexture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				shieldMaterial.map = material;
+				loadShip();
+			}, function (data) { loading(data, "shield texture")});
+		}
+		loadAsteroidTexture();
+	}
+
+	// This function loads the ship and then, once finished, calls finishSetup()
+	function loadShip() {
+		var loader = new THREE.ObjectLoader();
+    	loader.load( '/models/star-wars-vader-tie-fighter.json', 
+    		function ( model ) {
+				ship = model;
+				finishSetup();
+			}, function(data) { loading(data, "ship model")});
+	}
+
+	function finishSetup() {
 		createScene();
-		draw()
-	}, loading);
+		draw();
+	}
+
+	startSetup();
 }
 
 function draw()
@@ -233,7 +267,7 @@ function createScene()
 		// set a default position for the camera
 		// not doing this somehow messes up shadow rendering
 		camera.position.z = 30;
-	}
+ 	}
 
 	createShip();
 	createShield();

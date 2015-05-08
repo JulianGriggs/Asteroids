@@ -8,7 +8,7 @@ var bullets = [];
 var asteroids = [];
 
 var bulletVelocity = 0.4;
-var asteroidVelocity = 0.1;
+var asteroidVelocity = 0.2;
 var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
@@ -22,6 +22,9 @@ var score = 0;
 
 // a boolean to determine if the user is currenlty playing the game
 var inPlay = false;
+
+var gameOverSound;
+var shipFiringSound;
 
 // create the sphere's material
 var shipMaterial =
@@ -75,6 +78,9 @@ function startGame() {
 }
 
 function endGame() {
+	if (inPlay) {
+		gameOverSound.play();
+	}
 	inPlay = false;
 	var c = document.getElementById("hello");
 	c.textContent = "You lose. Hit enter to restart the game"
@@ -147,16 +153,17 @@ function setup() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
 				shieldMaterial.map = material;
-				loadSpaceTexture();
+				// loadSpaceTexture();
+				loadShip();
 			}, function (data) { loading(data, "shield texture")});
 		}
-		function loadSpaceTexture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
-			function (material) { 
-				spaceMaterial.map = material;
-				loadShip();
-			}, function (data) { loading(data, "space texture")});
-		}
+		// function loadSpaceTexture() {
+		// 	var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
+		// 	function (material) { 
+		// 		spaceMaterial.map = material;
+		// 		loadShip();
+		// 	}, function (data) { loading(data, "space texture")});
+		// }
 
 		loadAsteroidTexture();
 	}
@@ -297,11 +304,19 @@ function createScene()
 		camera.position.z = 50;
  	}
 
+ 	function createSounds() {
+ 		// credit http://soundbible.com/
+ 		gameOverSound = new Audio("/sounds/Blast-SoundBible.com-2068539061.wav");
+ 		// credit http://www.freesfx.co.uk/
+ 		shipFiringSound = new Audio("/sounds/science_fiction_laser_005.mp3");
+ 	}
+
 	createShip();
 	createShield();
 	createBullets();
 	createLights();
 	createCamera();
+	createSounds();
 
 }
 
@@ -492,6 +507,7 @@ function shipFiring()
 		if (bullets[i].position.equals(originPosition)) {
 			bullets[i].direction = ship.direction.clone();
 			makeOpaque(bullets[i]);
+			shipFiringSound.play();
 			break;
 		} 
 	};

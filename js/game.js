@@ -171,18 +171,15 @@ function draw()
 	requestAnimationFrame(draw);
 	shipMovement();
 	asteroidMovement();
-	// shipFiring();
 	bulletMovement();
 	checkCollisions();
-
 }
-
 
 function createScene() 
 {
 	// set the scene size
 	WIDTH = 640;
-	HEIGHT = 360;
+	HEIGHT = 640;
 
 	// create a WebGL renderer, camera, and a scene
 	renderer = new THREE.WebGLRenderer();
@@ -192,12 +189,13 @@ function createScene()
 
 	// attach the renderer-supplied DOM element
 	var c = document.getElementById("gameCanvas");
+	// var c = document.body;
 	c.appendChild(renderer.domElement);
 
 	scene = new THREE.Scene();
 
 	function createShip() {
-	    ship.scale.set(2,2,2);
+	    ship.scale.set(1,1,1);
 	    ship.position.x = 0;
 	    ship.position.y = 0;
 	    ship.position.z = 0;
@@ -266,7 +264,7 @@ function createScene()
 
 		// set a default position for the camera
 		// not doing this somehow messes up shadow rendering
-		camera.position.z = 30;
+		camera.position.z = 50;
  	}
 
 	createShip();

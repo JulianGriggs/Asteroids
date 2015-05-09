@@ -8,7 +8,7 @@ var bullets = [];
 var asteroids = [];
 
 var bulletVelocity = 0.4;
-var asteroidVelocity = 0.2;
+var asteroidVelocity = 0.1;
 var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
@@ -170,17 +170,16 @@ function setup() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
 				shieldMaterial.map = material;
-				// loadSpaceTexture();
-				loadShip();
+				loadSpaceTexture();
 			}, function (data) { loading(data, "shield texture")});
 		}
-		// function loadSpaceTexture() {
-		// 	var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
-		// 	function (material) { 
-		// 		spaceMaterial.map = material;
-		// 		loadShip();
-		// 	}, function (data) { loading(data, "space texture")});
-		// }
+		function loadSpaceTexture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				spaceMaterial.map = material;
+				loadShip();
+			}, function (data) { loading(data, "space texture")});
+		}
 
 		loadAsteroidTexture();
 	}
@@ -524,6 +523,9 @@ function shipFiring()
 		if (bullets[i].position.equals(originPosition)) {
 			bullets[i].direction = ship.direction.clone();
 			makeOpaque(bullets[i]);
+			 
+			shipFiringSound.pause();
+			shipFiringSound.currentTime = 0;
 			shipFiringSound.play();
 			break;
 		} 

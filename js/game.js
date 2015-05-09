@@ -159,6 +159,7 @@ function setup() {
 			}, function (data) { loading(data, "asteroid texture")});
 		}
 		// function loadExplosionGif() {
+		//  // credit http://photobucket.com/images/explosion%20gif
 		// 	var gif = THREE.ImageUtils.loadTexture('/gifs/explosion-1.gif-c200',
 		// 	function(material) {
 		// 		explosionMaterial.map = material;

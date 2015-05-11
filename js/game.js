@@ -9,6 +9,7 @@ var asteroids = [];
 
 var bulletVelocity = 0.4;
 var asteroidVelocity = 0.1;
+var shipRotationVelocity = 0.07;
 var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
@@ -22,6 +23,9 @@ var score = 0;
 
 // a boolean to determine if the user is currenlty playing the game
 var inPlay = false;
+
+// a boolean to determine if everything is loaded
+var isLoaded = false;
 
 var gameOverSound;
 var shipFiringSound;
@@ -69,30 +73,28 @@ var explosionMaterial =
 
 
 function startGame() {
-	console.log(camera);
 	inPlay = true;
 	score = 0;
 	updateScore();
 	var c = document.getElementById("hello");
 	c.textContent = "Game on!"
-	if (asteroids.length == 0) {
-		createAsteroids();
-	} else {
-		for (var i = 0; i < asteroids.length; i++) {
-			resetAsteroid(asteroids[i]);
-		};
+
+	for (var i = 0; i < NUM_ASTEROIDS; i++) {
+		resetAsteroid(asteroids[i]);
+	}
+	for (var i = 0; i < NUM_BULLETS; i++) {
+		resetBullet(bullets[i]);
 	}
 }
 
 function endGame() {
 	if (inPlay) {
 		gameOverSound.play();
-
 	}
 	inPlay = false;
 	var c = document.getElementById("hello");
 	c.textContent = "You lose. Hit enter to restart the game"
-	for (var i = 0; i < asteroids.length; i++) {
+	for (var i = 0; i < NUM_ASTEROIDS; i++) {
 		asteroids[i].direction = originPosition.clone();
 	};
 }
@@ -103,24 +105,6 @@ function loading(data, type){
 	if (data.loaded / data.total == 1) loadingDiv.style.display = 'none';
 }
 
-
-function createAsteroids() {
-	// create 25 asteroids available to use
-	for (var i = 0; i < NUM_ASTEROIDS; i++) {
-		var radius = 2;
-		var segments = 4;
-		var rings = 4;
-
-		var ast = new THREE.Mesh(
-			new THREE.SphereGeometry(radius,
-				segments,
-				rings),
-			asteroidMaterial.clone());
-		resetAsteroid(ast)
-		scene.add(ast);
-		asteroids.push(ast);
-	};
-}
 
 function updateScore() {
 	var c = document.getElementById("currentScore");
@@ -136,9 +120,9 @@ function getRandomInt(min, max) {
 function getRandomPointOnCircle(radius) {
 	var angle = Math.random()*Math.PI*2;
 	x = Math.cos(angle)*radius;
-	y = Math.sin(angle)*radius;
+	z = Math.sin(angle)*radius;
 
-	return new THREE.Vector3(x, y, 0);
+	return new THREE.Vector3(x, 0, z);
 }
  
  
@@ -197,6 +181,7 @@ function setup() {
 	function finishSetup() {
 		createScene();
 		draw();
+		isLoaded = true;
 	}
 
 	startSetup();
@@ -210,10 +195,14 @@ function draw()
   	renderer.render(bgScene, bgCamera);
   	renderer.render(scene, camera);
 	requestAnimationFrame(draw);
-	shipMovement();
-	asteroidMovement();
-	bulletMovement();
-	checkCollisions();
+	
+	// Only should run these if in game play
+	if (inPlay) {
+		shipMovement();
+		asteroidMovement();
+		bulletMovement();
+		checkCollisions();
+	}
 }
 
 function createScene() 
@@ -248,11 +237,16 @@ function createScene()
 	scene = new THREE.Scene();
 
 	function createShip() {
-	    ship.scale.set(1,1,1);
+	    ship.scale.set(2,2,2);
 	    ship.position.x = 0;
 	    ship.position.y = 0;
 	    ship.position.z = 0;
-	    ship.direction = ship.up.clone();
+
+	   	var direction = new THREE.Vector3(10,0,0);
+	   	ship.lookAt(direction);
+	    
+	    // the .negate() is so that the bullet comes from the front of the ship
+	    ship.direction = direction.clone().negate().normalize();
     	scene.add( ship );
 	}
 
@@ -285,14 +279,32 @@ function createScene()
 		};
 	}
 
+	function createAsteroids() {
+		// create 25 asteroids available to use
+		for (var i = 0; i < NUM_ASTEROIDS; i++) {
+			var radius = 2;
+			var segments = 8;
+			var rings = 8;
+
+			var ast = new THREE.Mesh(
+				new THREE.SphereGeometry(radius,
+					segments,
+					rings),
+				asteroidMaterial.clone());
+			resetAsteroid(ast)
+			scene.add(ast);
+			asteroids.push(ast);
+		};
+	}
+
 	function createLights() {
 		// create a point light
 		pointLight = new THREE.PointLight(0xF8D898);
 		 
 		// set its position
-		pointLight.position.x = -1000;
-		pointLight.position.y = 0;
-		pointLight.position.z = 1000;
+		pointLight.position.x = 0;
+		pointLight.position.y = 1000;
+		pointLight.position.z = 0;
 		pointLight.intensity = 2.9;
 		pointLight.distance = 10000;
 		 
@@ -317,7 +329,9 @@ function createScene()
 
 		// set a default position for the camera
 		// not doing this somehow messes up shadow rendering
-		camera.position.z = 50;
+		camera.position.y = 50;
+
+		camera.lookAt(originPosition);
  	}
 
  	function createSounds() {
@@ -330,6 +344,7 @@ function createScene()
 	createShip();
 	createShield();
 	createBullets();
+	createAsteroids();
 	createLights();
 	createCamera();
 	createSounds();
@@ -352,14 +367,14 @@ function shipMovement()
 	// move left
 	if (Key.isDown(Key.LEFT) || Key.isDown(Key.DOWN))		
 	{
-		ship.rotation.z += .07;
-		ship.direction = ship.up.clone().applyAxisAngle(new THREE.Vector3(0,0,1), ship.rotation.z);
+		ship.rotation.y += shipRotationVelocity;
+		ship.direction = ship.direction.clone().applyAxisAngle(new THREE.Vector3(0,1,0), shipRotationVelocity);
 	}	
 	// move right
 	else if (Key.isDown(Key.RIGHT) || Key.isDown(Key.UP))
 	{
-		ship.rotation.z -= .07;
-		ship.direction = ship.up.clone().applyAxisAngle(new THREE.Vector3(0,0,1), ship.rotation.z);	
+		ship.rotation.y -= shipRotationVelocity;
+		ship.direction = ship.direction.clone().applyAxisAngle(new THREE.Vector3(0,1,0), -shipRotationVelocity);
 	}
 	else
 	{
@@ -384,8 +399,8 @@ function resetBulletIfOutOfBounds(bullet)
 	// 		bullet.position.y > HEIGHT / 2)
 	if (bullet.position.x < -30  || 
 			bullet.position.x >  30  || 
-			bullet.position.y < -30 || 
-			bullet.position.y > 30)
+			bullet.position.z < -30 || 
+			bullet.position.z > 30)
 	{
 		resetBullet(bullet);
 		bullet.position.set(0,0,0);
@@ -418,8 +433,8 @@ function resetAsteroidIfOutOfBounds(ast)
 {
 	if (ast.position.x < -50  || 
 			ast.position.x >  50  || 
-			ast.position.y < -50 || 
-			ast.position.y > 50)
+			ast.position.z < -50 || 
+			ast.position.z > 50)
 	{
 		resetAsteroid(ast);
 	}

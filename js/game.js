@@ -61,6 +61,13 @@ var asteroidMaterial =
 		color: ASTEROID_COLOR
 	});
 
+var explosionMaterial = 
+	new THREE.MeshLambertMaterial(
+	{
+		color: ASTEROID_COLOR
+	});
+
+
 function startGame() {
 	console.log(camera);
 	inPlay = true;
@@ -80,6 +87,7 @@ function startGame() {
 function endGame() {
 	if (inPlay) {
 		gameOverSound.play();
+
 	}
 	inPlay = false;
 	var c = document.getElementById("hello");
@@ -146,9 +154,18 @@ function setup() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/stone_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
 				asteroidMaterial.map = material;
+				// loadExplosionGif();
 				loadShieldTexture();
 			}, function (data) { loading(data, "asteroid texture")});
 		}
+		// function loadExplosionGif() {
+		//  // credit http://photobucket.com/images/explosion%20gif
+		// 	var gif = THREE.ImageUtils.loadTexture('/gifs/explosion-1.gif-c200',
+		// 	function(material) {
+		// 		explosionMaterial.map = material;
+		// 		loadShieldTexture();
+		// 	}, function (data) { loading(data, "explosion texture")});
+		// }
 		function loadShieldTexture() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 

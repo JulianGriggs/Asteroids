@@ -7,9 +7,11 @@ var shield;
 var bullets = [];
 var asteroids = [];
 
-var bulletVelocity = 0.4;
-var asteroidVelocity = 0.1;
-var shipRotationVelocity = 0.07;
+var bulletVelocity = 1;
+var shipRotationVelocity = .1;
+var START_ASTEROID_VELOCITY = .1;
+var asteroidVelocity = START_ASTEROID_VELOCITY;
+var FINISH_ASTEROID_VELOCITY = .25;
 var WIDTH;
 var HEIGHT;
 var NUM_BULLETS = 15;
@@ -76,6 +78,7 @@ function startGame() {
 	inPlay = true;
 	score = 0;
 	updateScore();
+	asteroidVelocity = START_ASTEROID_VELOCITY;
 	var c = document.getElementById("hello");
 	c.textContent = "Game on!"
 
@@ -287,13 +290,12 @@ function createScene()
 			var radius = 2;
 			var segments = 8;
 			var rings = 8;
-
 			var ast = new THREE.Mesh(
 				new THREE.SphereGeometry(radius,
 					segments,
 					rings),
 				asteroidMaterial.clone());
-			resetAsteroid(ast)
+			ast.velocity = asteroidVelocity;
 			scene.add(ast);
 			asteroids.push(ast);
 		};
@@ -429,6 +431,7 @@ function resetAsteroid(ast)
 		};
 	} 
 	ast.mass = 1; //perhaps change later
+	ast.velocity = asteroidVelocity;
 }
 
 function resetAsteroidIfOutOfBounds(ast)
@@ -449,7 +452,7 @@ function asteroidMovement()
 	};
 
 	for (var i = 0; i < asteroids.length; i++) {
-		asteroids[i].position = asteroids[i].position.add(asteroids[i].direction.clone().multiplyScalar(asteroidVelocity));
+		asteroids[i].position = asteroids[i].position.add(asteroids[i].direction.clone().multiplyScalar(asteroids[i].velocity));
 	};
 }
 
@@ -511,6 +514,9 @@ function checkCollisions()
 				resetAsteroid(asteroids[i]);
 				resetBullet(bullets[j]);
 				score += 1;
+				if (score % 10 == 0) {
+					makeHarder();
+				}
 				updateScore();
 			}
 		}
@@ -522,6 +528,13 @@ function checkCollisions()
 			endGame();
 		}
 	};
+}
+
+function makeHarder() {
+	if (asteroidVelocity < FINISH_ASTEROID_VELOCITY) {
+		asteroidVelocity += .01;
+	}
+	return;
 }
 
 function bulletMovement()

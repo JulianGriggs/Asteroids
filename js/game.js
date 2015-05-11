@@ -40,7 +40,7 @@ var shipMaterial =
 var shieldMaterial = 
 	new THREE.MeshBasicMaterial(
 	{
-		color: 0xFFFF00,
+		color: 0xADD8E6,
 		transparent: true,
 		opacity: 0.7
 	});
@@ -174,6 +174,8 @@ function setup() {
 	function loadShip() {
 		var loader = new THREE.ObjectLoader();
     	loader.load( '/models/star-wars-vader-tie-fighter.json', 
+    	    // loader.load( '/models/star-wars-x-wing.json', 
+
     		function ( model ) {
 				ship = model;
 				finishSetup();
@@ -284,7 +286,8 @@ function createScene()
 	function createAsteroids() {
 		// create 25 asteroids available to use
 		for (var i = 0; i < NUM_ASTEROIDS; i++) {
-			var radius = 2;
+			var rand = getRandomInt(1, 4);
+			var radius = rand;
 			var segments = 8;
 			var rings = 8;
 
@@ -293,6 +296,7 @@ function createScene()
 					segments,
 					rings),
 				asteroidMaterial.clone());
+			ast.mass = rand;
 			resetAsteroid(ast)
 			scene.add(ast);
 			asteroids.push(ast);
@@ -427,8 +431,7 @@ function resetAsteroid(ast)
 				break;
 			}
 		};
-	} 
-	ast.mass = 1; //perhaps change later
+	}
 }
 
 function resetAsteroidIfOutOfBounds(ast)

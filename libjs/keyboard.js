@@ -33,7 +33,7 @@ var Key = {
   onKeyup: function(event) {
     if (event.keyCode == Key.SPACE) {
       spaceAllowed = true;
-    } else if (event.keyCode == Key.ENTER && !inPlay) {
+    } else if (event.keyCode == Key.ENTER && !inPlay && isLoaded) {
       startGame();
     }
     delete this._pressed[event.keyCode];

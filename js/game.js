@@ -23,7 +23,7 @@ var score = 0;
 
 // a boolean to determine if the user is currenlty playing the game
 var inPlay = false;
-
+var soundOn = true;
 // a boolean to determine if everything is loaded
 var isLoaded = false;
 
@@ -89,7 +89,9 @@ function startGame() {
 
 function endGame() {
 	if (inPlay) {
-		gameOverSound.play();
+		if (soundOn) {
+			gameOverSound.play();
+		}
 	}
 	inPlay = false;
 	var c = document.getElementById("hello");
@@ -540,8 +542,10 @@ function shipFiring()
 			makeOpaque(bullets[i]);
 			 
 			shipFiringSound.pause();
-			shipFiringSound.currentTime = 0;
-			shipFiringSound.play();
+			shipFiringSound.currentTime = 0; 
+			if (soundOn) {
+				shipFiringSound.play();
+			}
 			break;
 		} 
 	};

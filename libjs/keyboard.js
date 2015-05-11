@@ -13,6 +13,7 @@ var Key = {
   DOWN: 40,
   SPACE: 32,
   ENTER: 13,
+  M: 77,
   
   isDown: function(keyCode) {
     return this._pressed[keyCode];
@@ -35,7 +36,9 @@ var Key = {
       spaceAllowed = true;
     } else if (event.keyCode == Key.ENTER && !inPlay && isLoaded) {
       startGame();
-    }
+    } else if (event.keyCode == Key.M) {
+      soundOn = !soundOn;
+    } 
     delete this._pressed[event.keyCode];
   }
 

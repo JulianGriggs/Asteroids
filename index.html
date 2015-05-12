@@ -1,7 +1,10 @@
-<!doctype html>
-<html>
-	<head>
-		<title>Game</title>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Asteroid Survival</title>
 		<style>
 			body {
 				background-color: white;
@@ -19,19 +22,86 @@
 				align: center;
 			}
 		</style>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		    <!-- Custom styles for this template -->
+    <link href="css/cover.css" rel="stylesheet">
+		 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 	</head>
 	<body onload='setup(); updateScore();'>
-		<div id='gameCanvas'></div>
-		<div id="explosionCanvas" style="background-image: url(./textures/space_texture_copy.jpg); display: none"  >
-			<img id="explosion" src="./gifs/giphy.gif" rel:auto_play="0" width="560" height="560" />
-		</div> 
-		<div id='loading' align="center"></div>
-		<p id="hello" align="center">Press enter to begin the game</p>
-		<p align="center">Press m to toggle mute</p>
-		<div id='currentScore' align="center"></div>
+	   <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class=" clearfix">
+          	<div class="row">
+          		<h1> Asteroid Survival</h1>
+          	</div>
+             <div class="row">
+             <!-- <nav> -->
+                <ul class="nav masthead-nav col-md-2 col-md-offset-5" role="tablist">
+                  <li class="active"><a href="#game" role="tab" data-toggle="tab">Play the Game</a></li>
+                  <li><a href="#description" role="tab" data-toggle="tab">Description</a></li>
+                  <li><a href="#contact" role="tab" data-toggle="tab">Contact</a></li>
+                </ul>
+              <!-- </nav> -->
+              </div>
+          </div>
+
+          <div class="inner cover tab-content">
+          <div role="tabpanel" class="tab-pane active" id="game">
+          	<div class="row">
+          		<div id='loading' class="col-md-12"></div>
+          	</div>
+          	<div class="row">
+          		<div class-"col-md-6">
+					<p id="hello">Press enter to begin the game</p>
+				</div>
+      			<div class-"col-md-6">
+					<p >Press m to toggle mute</p>
+				</div>
+          	</div>
+          	<div class="row">
+				<div id='currentScore' class="col-md-12" align="center"></div>
+          	</div>
+
+            <div id='gameCanvas'></div>
+			<div id="explosionCanvas" style="background-image: url(./textures/space_texture_copy.jpg); display: none">
+				<img id="explosion" src="./gifs/giphy.gif" rel:auto_play="0" width="560" height="560" />
+			</div> 
+          </div>
+          
+          <div role="tabpanel" class="tab-pane" id="description">
+          <p> Blah blah blah blah</p>
+          </div>
+
+          <div role="tabpanel" class="tab-pane" id="contact">
+          <p> Hi, I'm Paul</p>
+          </div>
+
+          <!-- <div class="mastfoot">
+            <div class="inner">
+              <p>Asteroids Remake by <a href="https://github.com/JulianGriggs">JulianGriggs</a> and <a href="https://github.com/colemccracken"> colemccracken</p>
+            </div>
+          </div> -->
+
+        </div>
+
+      </div>
+
+    </div>
+		
 	</body>
 	<script src='./libjs/three.min.js'></script>
 	<script src='./libjs/keyboard.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src='./libjs/bootstrap.min.js'></script>
 	<script src='./js/game.js'></script>
 	<img id="explosion" />
 </html>

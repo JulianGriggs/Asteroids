@@ -32,6 +32,8 @@ var soundOn = true;
 // a boolean to determine if everything is loaded
 var isLoaded = false;
 
+var BASE_URL = "./public_html";
+
 var gameOverSound;
 var shipFiringSound;
 
@@ -192,7 +194,7 @@ function setup() {
 	// This function loads the textures and then, once finished, calls the loadShip function
 	function loadMaterials() {
 		function loadAsteroid1Texture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture1.jpg', THREE.SphericalReflectionMapping,
+			var texture = THREE.ImageUtils.loadTexture('./textures/asteroid_texture1.jpg', THREE.SphericalReflectionMapping,
 				function (material) { 
 					asteroidMaterial1.map = material;
 					loadAsteroid2Texture();

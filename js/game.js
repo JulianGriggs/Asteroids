@@ -120,10 +120,12 @@ function explosion() {
 }
 
 function removeExplosion () {
-	var explosion = document.getElementById('explosion');
-	explosion.src = "./textures/space_texture.jpg";
-	var explosionCanvas = document.getElementById('explosionCanvas');
-	explosionCanvas.style.display = "block";
+	if (!inPlay) {
+		var explosion = document.getElementById('explosion');
+		explosion.src = "./textures/space_texture.jpg";
+		var explosionCanvas = document.getElementById('explosionCanvas');
+		explosionCanvas.style.display = "block";
+	}
 }
 
 function endGame() {

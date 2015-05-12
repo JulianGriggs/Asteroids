@@ -278,8 +278,8 @@ function draw()
 function createScene() 
 {
 	// set the scene size
-	WIDTH = 640;
-	HEIGHT = 640;
+	WIDTH = 560;
+	HEIGHT = 560;
 
 	// create a WebGL renderer, camera, and a scene
 	renderer = new THREE.WebGLRenderer();

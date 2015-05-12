@@ -192,7 +192,7 @@ function setup() {
 	// This function loads the textures and then, once finished, calls the loadShip function
 	function loadMaterials() {
 		function loadAsteroid1Texture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture1.jpg', THREE.SphericalReflectionMapping,
+			var texture = THREE.ImageUtils.loadTexture('./textures/asteroid_texture1.jpg', THREE.SphericalReflectionMapping,
 				function (material) { 
 					asteroidMaterial1.map = material;
 					loadAsteroid2Texture();
@@ -200,7 +200,7 @@ function setup() {
 		}
 
 		function loadAsteroid2Texture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture2.jpg', THREE.SphericalReflectionMapping,
+			var texture = THREE.ImageUtils.loadTexture('./textures/asteroid_texture2.jpg', THREE.SphericalReflectionMapping,
 				function (material) { 
 					asteroidMaterial2.map = material;
 					loadAsteroid3Texture();
@@ -208,7 +208,7 @@ function setup() {
 		}
 
 		function loadAsteroid3Texture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture3.jpg', THREE.SphericalReflectionMapping,
+			var texture = THREE.ImageUtils.loadTexture('./textures/asteroid_texture3.jpg', THREE.SphericalReflectionMapping,
 				function (material) { 
 					asteroidMaterial3.map = material;
 					loadFireTexture();
@@ -216,7 +216,7 @@ function setup() {
 		}
 
 		function loadFireTexture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/fire_texture.jpg', THREE.SphericalReflectionMapping,
+			var texture = THREE.ImageUtils.loadTexture('./textures/fire_texture.jpg', THREE.SphericalReflectionMapping,
 				function (material) { 
 					fireMaterial.map = material;
 					loadSpaceTexture();
@@ -224,7 +224,7 @@ function setup() {
 		}
 
 		function loadSpaceTexture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
+			var texture = THREE.ImageUtils.loadTexture('./textures/space_texture.jpg', THREE.SphericalReflectionMapping,
 				function (material) { 
 					spaceMaterial.map = material;
 					loadShip();
@@ -237,7 +237,7 @@ function setup() {
 	// This function loads the ship and then, once finished, calls finishSetup()
 	function loadShip() {
 		var loader = new THREE.ObjectLoader();
-		loader.load( '/models/star-wars-vader-tie-fighter.json', 
+		loader.load( './models/star-wars-vader-tie-fighter.json', 
     	    // loader.load( '/models/star-wars-x-wing.json', 
 
     	    	function ( model ) {
@@ -414,9 +414,9 @@ function createBullets() {
 
 	function createSounds() {
  		// credit http://soundbible.com/
- 		gameOverSound = new Audio("/sounds/Blast-SoundBible.com-2068539061.wav");
+ 		gameOverSound = new Audio("./sounds/Blast-SoundBible.com-2068539061.wav");
  		// credit http://www.freesfx.co.uk/
- 		shipFiringSound = new Audio("/sounds/science_fiction_laser_005.mp3");
+ 		shipFiringSound = new Audio("./sounds/science_fiction_laser_005.mp3");
  	}
 
  	createShip();

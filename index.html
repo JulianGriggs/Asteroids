@@ -7,7 +7,12 @@
 				background-color: white;
 			}
 			#gameCanvas {
-				background-color: black;
+				width: 640px;
+				height: 640px;
+				margin: auto;
+				align: center;
+			}
+			#explosionCanvas {
 				width: 640px;
 				height: 640px;
 				margin: auto;
@@ -17,6 +22,9 @@
 	</head>
 	<body onload='setup(); updateScore();'>
 		<div id='gameCanvas'></div>
+		<div id="explosionCanvas" style="background-image: url(./textures/space_texture_copy.jpg); display: none"  >
+			<img id="explosion" src="./gifs/giphy.gif" rel:auto_play="0" width="640" height="640" />
+		</div> 
 		<div id='loading' align="center"></div>
 		<p id="hello" align="center">Press enter to begin the game</p>
 		<p align="center">Press m to toggle mute</p>
@@ -25,4 +33,7 @@
 	<script src='./libjs/three.min.js'></script>
 	<script src='./libjs/keyboard.js'></script>
 	<script src='./js/game.js'></script>
+	<script src="./libjs/libgif.js"></script>
+	<script src="./libjs/rubbable.js"></script>
+	<img id="explosion" />
 </html>

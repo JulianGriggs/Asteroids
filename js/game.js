@@ -6,6 +6,7 @@ var ship;
 var shield;
 var bullets = [];
 var asteroids = [];
+var gif;
 
 var bulletVelocity = 1;
 var shipRotationVelocity = .1;
@@ -87,6 +88,12 @@ var explosionMaterial =
 
 
 function startGame() {
+
+	var gameCanvas = document.getElementById('gameCanvas');
+	gameCanvas.style.display = 'block';
+	var explosionCanvas = document.getElementById('explosionCanvas');
+	explosionCanvas.style.display = "none";
+
 	inPlay = true;
 	score = 0;
 	updateScore();
@@ -101,6 +108,23 @@ function startGame() {
 		resetBullet(bullets[i]);
 	}
 }
+// taken from https://github.com/buzzfeed/libgif-js
+function explosion() {
+	var gameCanvas = document.getElementById('gameCanvas');
+	gameCanvas.style.display = 'none';
+	var explosion = document.getElementById('explosion');
+	explosion.src = "./gifs/giphy.gif";
+	var explosionCanvas = document.getElementById('explosionCanvas');
+	explosionCanvas.style.display = "block";
+	setTimeout(removeExplosion, 6000);
+}
+
+function removeExplosion () {
+	var explosion = document.getElementById('explosion');
+	explosion.src = "./textures/space_texture.jpg";
+	var explosionCanvas = document.getElementById('explosionCanvas');
+	explosionCanvas.style.display = "block";
+}
 
 function endGame() {
 	if (inPlay) {
@@ -114,6 +138,7 @@ function endGame() {
 	for (var i = 0; i < NUM_ASTEROIDS; i++) {
 		asteroids[i].direction = originPosition.clone();
 	};
+	explosion();
 }
 
 function loading(data, type){
@@ -172,16 +197,15 @@ function setup() {
 			function (material) { 
 				asteroidMaterial3.map = material;
 				loadShieldTexture();
+				// loadExplosionGif();
 			}, function (data) { loading(data, "asteroid 3 texture")});
 		}
 
 		// function loadExplosionGif() {
-		//  // credit http://photobucket.com/images/explosion%20gif
-		// 	var gif = THREE.ImageUtils.loadTexture('/gifs/explosion-1.gif-c200',
-		// 	function(material) {
-		// 		explosionMaterial.map = material;
-		// 		loadShieldTexture();
-		// 	}, function (data) { loading(data, "explosion texture")});
+		// 	var img = document.getElementById('explosion');
+		// 	gif = new RubbableGif({ gif: img } );
+		// 	gif.load();
+		// 	loadShieldTexture();
 		// }
 		function loadShieldTexture() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,

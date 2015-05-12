@@ -155,7 +155,11 @@ function endGame() {
 function loading(data, type){
 	var loadingDiv = document.getElementById("loading");
 	loadingDiv.textContent = "Loading " + type + ": " + Math.floor(data.loaded/data.total * 100) + "%"; 
-	if (data.loaded / data.total == 1) loadingDiv.style.display = 'none';
+	if (data.loaded / data.total == 1) {
+		loadingDiv.style.display = 'none';
+		var c = document.getElementById("hello");
+		c.textContent = "Press enter to begin";
+	}
 }
 
 
@@ -246,6 +250,7 @@ function setup() {
 		createScene();
 		draw();
 		isLoaded = true;
+
 	}
 
 	startSetup();

@@ -80,6 +80,12 @@ var asteroidMaterial3 =
 		color: ASTEROID_COLOR
 	});
 
+var fireMaterial =
+	new THREE.MeshLambertMaterial(
+	{
+		color: 0xFFFFFF
+	});
+
 var explosionMaterial = 
 	new THREE.MeshLambertMaterial(
 	{
@@ -199,25 +205,18 @@ function setup() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture3.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
 				asteroidMaterial3.map = material;
-				// loadShieldTexture();
-				// loadExplosionGif();
-				loadSpaceTexture();
+				loadFireTexture();
 			}, function (data) { loading(data, "asteroid 3 texture")});
 		}
 
-		// function loadExplosionGif() {
-		// 	var img = document.getElementById('explosion');
-		// 	gif = new RubbableGif({ gif: img } );
-		// 	gif.load();
-		// 	loadShieldTexture();
-		// }
-		// function loadShieldTexture() {
-		// 	var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
-		// 	function (material) { 
-		// 		shieldMaterial.map = material;
-		// 		loadSpaceTexture();
-		// 	}, function (data) { loading(data, "shield texture")});
-		// }
+		function loadFireTexture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/fire_texture.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				fireMaterial.map = material;
+				loadSpaceTexture();
+			}, function (data) { loading(data, "fire texture")});
+		}
+
 		function loadSpaceTexture() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
@@ -485,6 +484,7 @@ function resetAsteroid(ast)
 	var hasCollision = true;
 	while (hasCollision) {
 		var hasCollision = false;
+
 		ast.position.copy(getRandomPointOnCircle(50));
 		ast.direction = getRandomPointOnCircle(50).sub(ast.position).normalize();
 		var sphere1 = new THREE.Sphere(ast.position, ast.geometry.boundingSphere.radius);
@@ -497,6 +497,14 @@ function resetAsteroid(ast)
 			}
 		};
 	} 
+
+	var rand = getRandomInt(1, 4);
+	var material;
+	if (rand == 1) material = asteroidMaterial1.clone();
+	else if (rand == 2) material = asteroidMaterial2.clone();
+	else material = asteroidMaterial3.clone()
+	
+	ast.material = material;
 	ast.mass = 1; //perhaps change later
 	ast.velocity = asteroidVelocity;
 }
@@ -578,6 +586,7 @@ function checkCollisions()
 			sphere2 = new THREE.Sphere(bullets[j].position, bullets[j].geometry.boundingSphere.radius);
 			if (sphere1.intersectsSphere(sphere2))
 			{
+				asteroids[i].material = fireMaterial;
 				resetAsteroid(asteroids[i]);
 				resetBullet(bullets[j]);
 				score += 1;

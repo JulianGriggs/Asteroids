@@ -26,6 +26,8 @@ var score = 0;
 
 // a boolean to determine if the user is currenlty playing the game
 var inPlay = false;
+
+var isPaused = false;
 var soundOn = true;
 // a boolean to determine if everything is loaded
 var isLoaded = false;
@@ -259,7 +261,7 @@ function draw()
   	requestAnimationFrame(draw);
 
 	// Only should run these if in game play
-	if (inPlay) {
+	if (inPlay && !isPaused) {
 		shipMovement();
 		asteroidMovement();
 		bulletMovement();
@@ -539,9 +541,9 @@ function resetAsteroid(ast)
 	else if (rand == 2) material = asteroidMaterial2.clone();
 	else material = asteroidMaterial3.clone()
 
-		ast.material = material;
+	ast.material = material;
 	ast.isShot = false;
-	ast.mass = 1; //perhaps change later
+	// ast.mass = 1; //perhaps change later
 	ast.velocity = asteroidVelocity;
 }
 

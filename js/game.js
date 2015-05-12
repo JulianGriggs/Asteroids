@@ -32,8 +32,6 @@ var soundOn = true;
 // a boolean to determine if everything is loaded
 var isLoaded = false;
 
-var BASE_URL = "./public_html";
-
 var gameOverSound;
 var shipFiringSound;
 

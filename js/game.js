@@ -89,6 +89,7 @@ var explosionMaterial =
 
 function startGame() {
 
+	removeExplosion();
 	var gameCanvas = document.getElementById('gameCanvas');
 	gameCanvas.style.display = 'block';
 	var explosionCanvas = document.getElementById('explosionCanvas');
@@ -198,8 +199,9 @@ function setup() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture3.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
 				asteroidMaterial3.map = material;
-				loadShieldTexture();
+				// loadShieldTexture();
 				// loadExplosionGif();
+				loadSpaceTexture();
 			}, function (data) { loading(data, "asteroid 3 texture")});
 		}
 
@@ -209,13 +211,13 @@ function setup() {
 		// 	gif.load();
 		// 	loadShieldTexture();
 		// }
-		function loadShieldTexture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
-			function (material) { 
-				shieldMaterial.map = material;
-				loadSpaceTexture();
-			}, function (data) { loading(data, "shield texture")});
-		}
+		// function loadShieldTexture() {
+		// 	var texture = THREE.ImageUtils.loadTexture('/textures/shield_texture.jpg', THREE.SphericalReflectionMapping,
+		// 	function (material) { 
+		// 		shieldMaterial.map = material;
+		// 		loadSpaceTexture();
+		// 	}, function (data) { loading(data, "shield texture")});
+		// }
 		function loadSpaceTexture() {
 			var texture = THREE.ImageUtils.loadTexture('/textures/space_texture.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
@@ -235,6 +237,13 @@ function setup() {
 
     		function ( model ) {
 				ship = model;
+				ship.position = new THREE.Vector3(50,50,50);
+				// ship.position.x+=50;
+				// ship.position.y+=50;
+				// ship.position.z+=50;
+
+				console.log(scene);
+				console.log(ship);
 				finishSetup();
 			}, function(data) { loading(data, "ship model")});
 	}
@@ -309,17 +318,20 @@ function createScene()
 	    // the .negate() is so that the bullet comes from the front of the ship
 	    ship.direction = direction.clone().negate().normalize();
     	scene.add( ship );
+    	ship.translateOnAxis(new THREE.Vector3(1,0,0), .4);
+
+    	console.log(scene);
 	}
 
 	function createShield() {
 		var bbox = new THREE.BoundingBoxHelper( ship, 0xFFFFFF );
 		bbox.update();
 		shield = new THREE.Mesh(
-		new THREE.SphereGeometry(bbox.box.getBoundingSphere().radius,
+		new THREE.SphereGeometry(bbox.box.getBoundingSphere().radius * .7,
 			8,
 			8),
 			shieldMaterial);
-		scene.add(shield);
+//		scene.add(shield);
 	}
 
 	function createBullets() {

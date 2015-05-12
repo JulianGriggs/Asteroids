@@ -237,13 +237,6 @@ function setup() {
 
     		function ( model ) {
 				ship = model;
-				ship.position = new THREE.Vector3(50,50,50);
-				// ship.position.x+=50;
-				// ship.position.y+=50;
-				// ship.position.z+=50;
-
-				console.log(scene);
-				console.log(ship);
 				finishSetup();
 			}, function(data) { loading(data, "ship model")});
 	}
@@ -318,9 +311,7 @@ function createScene()
 	    // the .negate() is so that the bullet comes from the front of the ship
 	    ship.direction = direction.clone().negate().normalize();
     	scene.add( ship );
-    	ship.translateOnAxis(new THREE.Vector3(1,0,0), .4);
 
-    	console.log(scene);
 	}
 
 	function createShield() {

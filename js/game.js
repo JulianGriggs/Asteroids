@@ -543,7 +543,6 @@ function resetAsteroid(ast)
 
 	ast.material = material;
 	ast.isShot = false;
-	// ast.mass = 1; //perhaps change later
 	ast.velocity = asteroidVelocity;
 }
 

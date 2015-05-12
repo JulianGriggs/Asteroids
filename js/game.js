@@ -59,7 +59,19 @@ var bulletMaterial =
 		opacity: 0.0
 	});
 
-var asteroidMaterial =
+var asteroidMaterial1 =
+	new THREE.MeshLambertMaterial(
+	{
+		color: ASTEROID_COLOR
+	});
+
+var asteroidMaterial2 =
+	new THREE.MeshLambertMaterial(
+	{
+		color: ASTEROID_COLOR
+	});
+
+var asteroidMaterial3 =
 	new THREE.MeshLambertMaterial(
 	{
 		color: ASTEROID_COLOR
@@ -136,14 +148,30 @@ function setup() {
 
 	// This function loads the textures and then, once finished, calls the loadShip function
 	function loadMaterials() {
-		function loadAsteroidTexture() {
-			var texture = THREE.ImageUtils.loadTexture('/textures/stone_texture.jpg', THREE.SphericalReflectionMapping,
+		function loadAsteroid1Texture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture1.jpg', THREE.SphericalReflectionMapping,
 			function (material) { 
-				asteroidMaterial.map = material;
-				// loadExplosionGif();
-				loadShieldTexture();
-			}, function (data) { loading(data, "asteroid texture")});
+				asteroidMaterial1.map = material;
+				loadAsteroid2Texture();
+			}, function (data) { loading(data, "asteroid 1 texture")});
 		}
+
+		function loadAsteroid2Texture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture2.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				asteroidMaterial2.map = material;
+				loadAsteroid3Texture();
+			}, function (data) { loading(data, "asteroid 2 texture")});
+		}
+
+		function loadAsteroid3Texture() {
+			var texture = THREE.ImageUtils.loadTexture('/textures/asteroid_texture3.jpg', THREE.SphericalReflectionMapping,
+			function (material) { 
+				asteroidMaterial3.map = material;
+				loadShieldTexture();
+			}, function (data) { loading(data, "asteroid 3 texture")});
+		}
+
 		// function loadExplosionGif() {
 		//  // credit http://photobucket.com/images/explosion%20gif
 		// 	var gif = THREE.ImageUtils.loadTexture('/gifs/explosion-1.gif-c200',
@@ -167,7 +195,7 @@ function setup() {
 			}, function (data) { loading(data, "space texture")});
 		}
 
-		loadAsteroidTexture();
+		loadAsteroid1Texture();
 	}
 
 	// This function loads the ship and then, once finished, calls finishSetup()
@@ -290,12 +318,15 @@ function createScene()
 			var radius = rand;
 			var segments = 8;
 			var rings = 8;
-
+			var material;
+			if (i < NUM_ASTEROIDS *  (1/3)) material = asteroidMaterial1.clone();
+			else if (i < NUM_ASTEROIDS * (2/3)) material = asteroidMaterial2.clone();
+			else material = asteroidMaterial3.clone()
 			var ast = new THREE.Mesh(
 				new THREE.SphereGeometry(radius,
 					segments,
 					rings),
-				asteroidMaterial.clone());
+				material);
 			ast.mass = rand;
 			resetAsteroid(ast)
 			scene.add(ast);
